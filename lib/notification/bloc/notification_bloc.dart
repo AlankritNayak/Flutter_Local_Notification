@@ -8,6 +8,9 @@ import 'package:notification_repository/notification_repository.dart';
 part 'notification_event.dart';
 part 'notification_state.dart';
 
+
+/// A Bloc that listens to [NotificationRepository]'s notificationStream, and add a [NotificationReceived] event
+/// in response to new notification received.
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   NotificationBloc({required NotificationRepository notificationRepository})
       : _notificationRepository = notificationRepository,
