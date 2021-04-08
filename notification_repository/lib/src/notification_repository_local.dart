@@ -23,39 +23,38 @@ const AndroidNotificationChannel _androidNotificationChannel =
 /// background or terminated state. This is a top level function, outside of any class, and will run outside of app's
 /// context, we cannot do any UI implementing logic here. that is we cannot add new notification to the [NotificationRepository.notificationStream],
 /// in this handler.
-Future<void> firebaseMessagingBackgroundHandler(
+Future<void> firebaseMessagingBackgroundHandlerLocal(
     RemoteMessage remoteMessage) async {
   print("Handling a background message: ${remoteMessage.messageId}");
   // TODO: Implement storing the notification to local storage
-  
+
   if (remoteMessage.data['read'] == 'true') {
     print('inside cancel');
     await FlutterLocalNotificationsPlugin().cancelAll();
     return;
   }
-  RemoteNotification? remoteNotification = remoteMessage.notification;
-  if (remoteNotification != null) {
-    FlutterLocalNotificationsPlugin().show(
-        remoteMessage.messageId.hashCode,
-        remoteNotification.title,
-        remoteNotification.body,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-              _androidNotificationChannel.id,
-              _androidNotificationChannel.name,
-              _androidNotificationChannel.description,
-              icon: 'launch_background',
-              importance: Importance.max),
-        ));
-  }
+  final Map<String, dynamic>? data = remoteMessage.data;
+      if (data != null) {
+      FlutterLocalNotificationsPlugin().show(
+          remoteMessage.messageId.hashCode,
+          data['title'],
+          data['body'],
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+                _androidNotificationChannel.id,
+                _androidNotificationChannel.name,
+                _androidNotificationChannel.description,
+                icon: 'launch_background',
+                importance: Importance.max),
+          ));
+    }
 }
-
 
 ///This is the FCM specific implementation for the [NotificationRepository]
 /// FCM directly handles showing notification when the app is in background or terminated, however,
 /// for showing notifications when the app is in foreground, we are delegating this task to
 /// [FlutterLocalNotificationsPlugin].
-class NotificationRepositoryFCM implements NotificationRepository {
+class NotificationRepositoryLocal implements NotificationRepository {
   late final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
   late final FirebaseMessaging _firebaseMessaging;
 
@@ -92,7 +91,7 @@ class NotificationRepositoryFCM implements NotificationRepository {
     _firebaseMessaging = FirebaseMessaging.instance;
     await _setTokenListener();
     _setupOnMessageListener();
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandlerLocal);
     await _handleInteraction();
     if (Platform.isAndroid)
       await _enableAndroidForegroundNotification();
@@ -101,14 +100,12 @@ class NotificationRepositoryFCM implements NotificationRepository {
 
   /// schedules a notification, using [FlutterLocalNotificationsPlugin]
   Future<void> scheduleNotification(RemoteMessage remoteMessage) async {
-    RemoteNotification? remoteNotification = remoteMessage.notification;
-    if (Platform.isAndroid &&
-        (remoteNotification != null) &&
-        (remoteNotification.android != null)) {
-      _flutterLocalNotificationsPlugin.show(
+    final Map<String, dynamic>? data = remoteMessage.data;
+    if (data != null) {
+      FlutterLocalNotificationsPlugin().show(
           remoteMessage.messageId.hashCode,
-          remoteNotification.title,
-          remoteNotification.body,
+          data['title'],
+          data['body'],
           NotificationDetails(
             android: AndroidNotificationDetails(
                 _androidNotificationChannel.id,

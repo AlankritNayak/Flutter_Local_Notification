@@ -13,5 +13,13 @@ class NotificationRecieveSuccess extends NotificationState {
   NotificationRecieveSuccess(this.notificationModel);
   final NotificationModel notificationModel;
   @override
-    List<Object> get props => [notificationModel];
+  List<Object> get props => [notificationModel];
 }
+
+class TokenRecieveSuccess extends NotificationState {
+  TokenRecieveSuccess(this.token);
+  final Token token;
+  @override
+    List<Object> get props => [token];
+}
+

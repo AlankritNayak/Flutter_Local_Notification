@@ -14,3 +14,13 @@ class NotificationReceived extends NotificationEvent {
   @override
   List<Object> get props => [notificationEntity];
 }
+
+class TokenReceived extends NotificationEvent {
+  TokenReceived(this.token);
+  final Token token;
+
+@override
+  List<Object> get props => [token];
+}
+
+class NewTokenRequested extends NotificationEvent {}

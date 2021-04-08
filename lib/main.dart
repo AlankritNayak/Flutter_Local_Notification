@@ -8,18 +8,18 @@ import 'home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  NotificationRepositoryFCM notificationRepositoryFCM =
-      NotificationRepositoryFCM();
-  await notificationRepositoryFCM.initialize();
+  NotificationRepositoryLocal notificationRepositoryLocal =
+      NotificationRepositoryLocal();
+  await notificationRepositoryLocal.initialize();
   runApp(MyApp(
-    notificationRepositoryFCM: notificationRepositoryFCM,
+    notificationRepository: notificationRepositoryLocal,
   ));
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key, required this.notificationRepositoryFCM}) : super(key: key);
+  MyApp({Key? key, required this.notificationRepository}) : super(key: key);
 
-  final NotificationRepositoryFCM notificationRepositoryFCM;
+  final NotificationRepository notificationRepository;
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return BlocProvider<NotificationBloc>(
       create: (context) =>
-          NotificationBloc(notificationRepository: widget.notificationRepositoryFCM),
+          NotificationBloc(notificationRepository: widget.notificationRepository),
       child: MaterialApp(
         title: 'Flutter Demo',
         builder: (context, child) {

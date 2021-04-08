@@ -6,5 +6,7 @@ import 'entities/entities.dart';
 abstract class NotificationRepository {
   Future<void> initialize();
   Stream<NotificationEntity> get notificationStream;
+  Stream<Token> get tokenStream;
+  Future<void> getNewToken();
   void dispose();
 }
